@@ -1,0 +1,78 @@
+<script>
+
+  window.addEventListener('load', function() {
+    setMonthToCurrent()
+  });
+  
+  function setMonthToCurrent() {
+    var dateToday = new Date;
+    currentMonth = dateToday.getMonth();
+    currentMonth++;
+    currentMonthString = currentMonth.toString().padStart(2, "0");
+    document.getElementById("month").value = currentMonthString;
+    
+    //set custom date to current month
+    var currentYearString = dateToday.getFullYear().toString();
+    var startDateString = currentYearString + "-" + currentMonthString + "-01";
+    document.getElementById("start-date").value = startDateString;
+    
+    var endMonth = currentMonth + 1;
+    var endMonthString = endMonth.toString().padStart(2, "0");
+    var endDateString = currentYearString + "-" + endMonthString + "-01";
+    document.getElementById("end-date").value = endDateString;
+  }
+  
+  function importCalendarClient() {
+    //collect selected information
+    var calendar = document.getElementById("calendar").value;
+    
+    var customDate = document.querySelector(".custom-date");
+    
+    if (customDate.style.display == "block") {
+      //use custom date not year and month
+      var startDate = document.getElementById("start-date").value;
+      var endDate = document.getElementById("end-date").value;
+      
+      //format year and date into start and end date values
+      startDate += "T00:00:00Z";
+      endDate += "T00:00:00Z";
+    } else {
+      //use year and month
+      var year = document.getElementById("year").value;
+      var month = document.getElementById("month").value;
+      
+      //format year and date into start and end date values
+      var startDate = year + "-" + month + "-01T00:00:00Z";
+      var endMonth = (parseInt(month, 10) + 1).toString().padStart(2, "0");
+      var endDate = year + "-" + endMonth +"-01T00:00:00Z";
+    }
+    
+    var dates = [startDate, endDate];  // TODO: change this to an object
+    
+    google.script.run.importCalendarServer(dates, calendar);
+  }
+  
+  function toggleCustomDate() {
+    var customDate = document.getElementsByClassName("custom-date");
+    var display = customDate[0].style.display;
+    var year = document.getElementById("year");
+    var month = document.getElementById("month");
+    
+    if (display == "none" || display == "") {
+      year.setAttribute("disabled", "disabled");
+      month.setAttribute("disabled", "disabled");
+      document.getElementById("custom-date__button").innerHTML = "&#x274c;";
+      for (let item of customDate) {
+        item.style.display = "block";
+      }
+    } else if (display == "block") {
+      year.removeAttribute("disabled");
+      month.removeAttribute("disabled");
+      document.getElementById("custom-date__button").innerHTML = "&#x2795;";
+      for (let item of customDate) {
+        item.style.display = "none";
+      }
+    }
+  }
+  
+  </script>
